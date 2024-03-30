@@ -216,7 +216,6 @@ def pregunta_12():
     
     tbl2_grouped = tbl2.groupby('_c0').apply(lambda x: ','.join([f'{a}:{b}' for a, b in zip(x['_c5a'], x['_c5b'])])).reset_index()
     tbl2_grouped.columns = ['_c0', '_c5']
-     
 
     return tbl2_grouped
    

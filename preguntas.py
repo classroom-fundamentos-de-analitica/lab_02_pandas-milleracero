@@ -214,11 +214,11 @@ def pregunta_12():
     39   39                    ggg:3,hhh:8,jjj:5
     """
     
-    tbl2_grouped = tbl2.groupby('_c0').apply(lambda x: ','.join([f'{a}:{b}' for a, b in zip(x['_c5a'], x['_c5b'])])).reset_index()
-    tbl2_grouped.columns = ['_c0', '_c5']
-
-    return tbl2_grouped
-   
+    
+    copie=tbl2.copy()
+    copie["_c5"]=copie.apply(lambda x: f"{x['_c5a']}:{x['_c5b']}",axis=1)
+    tabla=copie.groupby("_c0")["_c5"].apply(lambda x:','.join(sorted(map(str,x)))).reset_index()
+    return tabla
 
   
 def pregunta_13():

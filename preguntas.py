@@ -22,7 +22,9 @@ def pregunta_01():
     40
 
     """
-    return
+
+
+    return tbl0.shape[0]
 
 
 def pregunta_02():
@@ -33,7 +35,7 @@ def pregunta_02():
     4
 
     """
-    return
+    return tbl0.shape[1]
 
 
 def pregunta_03():
@@ -50,8 +52,9 @@ def pregunta_03():
     Name: _c1, dtype: int64
 
     """
-    return
-
+    
+    return tbl0['_c1'].value_counts().sort_index()
+   
 
 def pregunta_04():
     """
@@ -65,7 +68,9 @@ def pregunta_04():
     E    4.785714
     Name: _c2, dtype: float64
     """
-    return
+
+
+    return tbl0.groupby('_c1')['_c2'].mean()
 
 
 def pregunta_05():
@@ -82,9 +87,10 @@ def pregunta_05():
     E    9
     Name: _c2, dtype: int64
     """
-    return
+    return tbl0.groupby('_c1')['_c2'].max()
 
 
+  
 def pregunta_06():
     """
     Retorne una lista con los valores unicos de la columna _c4 de del archivo `tbl1.csv`
@@ -94,7 +100,7 @@ def pregunta_06():
     ['A', 'B', 'C', 'D', 'E', 'F', 'G']
 
     """
-    return
+    return tbl1["_c4"].str.upper().sort_values().unique().tolist()
 
 
 def pregunta_07():
@@ -110,7 +116,8 @@ def pregunta_07():
     E    67
     Name: _c2, dtype: int64
     """
-    return
+    
+    return tbl0.groupby('_c1')['_c2'].sum()
 
 
 def pregunta_08():
@@ -128,7 +135,8 @@ def pregunta_08():
     39   39   E    5  1998-01-26    44
 
     """
-    return
+
+    return tbl0.assign(suma=tbl0["_c0"] + tbl0["_c2"])
 
 
 def pregunta_09():
@@ -146,7 +154,7 @@ def pregunta_09():
     39   39   E    5  1998-01-26  1998
 
     """
-    return
+    return tbl0.assign(year=tbl0["_c3"].str.split("-").str[0])
 
 
 def pregunta_10():
@@ -163,9 +171,12 @@ def pregunta_10():
     3   D                  1:2:3:5:5:7
     4   E  1:1:2:3:3:4:5:5:5:6:7:8:8:9
     """
-    return
-
-
+    tbl0_pivot = tbl0.pivot_table(
+        index="_c1", values="_c2", aggfunc=lambda x: ":".join(sorted(x.astype(str)))
+    )
+    
+    return tbl0_pivot
+ 
 def pregunta_11():
     """
     Construya una tabla que contenga _c0 y una lista separada por ',' de los valores de
@@ -182,7 +193,9 @@ def pregunta_11():
     38   38      d,e
     39   39    a,d,f
     """
-    return
+
+    tbl1_grouped = tbl1.groupby('_c0').agg({'_c4': lambda x: ','.join(sorted(x))}).reset_index()
+    return tbl1_grouped
 
 
 def pregunta_12():
@@ -200,9 +213,15 @@ def pregunta_12():
     38   38                    eee:0,fff:9,iii:2
     39   39                    ggg:3,hhh:8,jjj:5
     """
-    return
+    
+    tbl2_grouped = tbl2.groupby('_c0').apply(lambda x: ','.join([f'{a}:{b}' for a, b in zip(x['_c5a'], x['_c5b'])])).reset_index()
+    tbl2_grouped.columns = ['_c0', '_c5']
+     
 
+    return tbl2_grouped
+   
 
+  
 def pregunta_13():
     """
     Si la columna _c0 es la clave en los archivos `tbl0.tsv` y `tbl2.tsv`, compute la
@@ -217,4 +236,4 @@ def pregunta_13():
     E    275
     Name: _c5b, dtype: int64
     """
-    return
+    return tbl0.merge(tbl2, on="_c0").groupby("_c1")["_c5b"].sum()
